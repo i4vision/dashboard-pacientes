@@ -1,65 +1,116 @@
-import Image from "next/image";
+"use client";
+
+import { useEffect, useState } from "react";
+
+function formatPhone(phoneNum) {
+  if (!phoneNum) return "";
+  const cleaned = ('' + phoneNum).replace(/\D/g, '');
+  const match = cleaned.match(/^(\d{3})(\d{3})(\d{4})$/);
+  if (match) {
+    return `(${match[1]}) ${match[2]} ${match[3]}`;
+  }
+  return phoneNum.toString();
+}
 
 export default function Home() {
+  const [patients, setPatients] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    async function fetchPatients() {
+      try {
+        const res = await fetch('/api/patients');
+        if (res.ok) {
+          const data = await res.json();
+          setPatients(data);
+        } else {
+          setError("Received error from API.");
+        }
+      } catch (err) {
+        console.error("Failed to fetch", err);
+        setError("Failed to fetch data.");
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchPatients();
+  }, []);
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.js file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <main className="container">
+      <h1>Patient Overview</h1>
+      
+      <div className="dashboard-card">
+        <div className="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Paciente</th>
+                <th>Género</th>
+                <th>Documento</th>
+                <th>Teléfono</th>
+                <th>Clínica</th>
+                <th>Entidad</th>
+                <th>Cita</th>
+                <th>Tipo de Cita</th>
+              </tr>
+            </thead>
+            <tbody>
+              {loading ? (
+                <tr>
+                  <td colSpan="8" style={{ textAlign: "center", color: "var(--text-muted)", padding: "4rem 2rem", fontSize: "0.9rem" }}>
+                    Loading patient records...
+                  </td>
+                </tr>
+              ) : error ? (
+                <tr>
+                  <td colSpan="8" style={{ textAlign: "center", color: "var(--warning-color)", padding: "4rem 2rem" }}>
+                    {error}
+                  </td>
+                </tr>
+              ) : patients.length === 0 ? (
+                <tr>
+                  <td colSpan="8" style={{ textAlign: "center", color: "var(--text-muted)", padding: "4rem 2rem" }}>
+                    No patients connected yet. Waiting for incoming records.
+                  </td>
+                </tr>
+              ) : (
+                patients.map((patient) => (
+                  <tr key={patient.id}>
+                    <td>
+                        <div style={{ fontWeight: 600, color: "var(--text-main)" }}>
+                          {patient.nombres} {patient.apellidos}
+                        </div>
+                    </td>
+                    <td>
+                      <span className={`badge ${patient.genero === 'Femenino' ? 'badge-femenino' : 'badge-masculino'}`}>
+                        {patient.genero}
+                      </span>
+                    </td>
+                    <td style={{ fontFamily: "monospace", opacity: 0.85, fontSize: "0.85rem" }}>
+                      {patient.documento}
+                    </td>
+                    <td style={{ color: "var(--text-muted)", letterSpacing: "0.03em" }}>
+                      {formatPhone(patient.telefono)}
+                    </td>
+                    <td>
+                      <span className="clinic-pill">{patient.clinica}</span>
+                    </td>
+                    <td style={{ color: "var(--text-muted)" }}>{patient.entidad}</td>
+                    <td>{patient.cita}</td>
+                    <td>
+                      <span className={`badge ${patient.cita_tipo === 'Especialista' ? 'badge-especialista' : 'badge-estudio'}`}>
+                        {patient.cita_tipo}
+                      </span>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+      </div>
+    </main>
   );
 }

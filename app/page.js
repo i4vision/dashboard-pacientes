@@ -57,9 +57,23 @@ export default function Home() {
         setLoading(false);
       }
     }
-    fetchPatients();
-    // Auto-refresh interval (every 10 seconds to catch webhook updates dynamically)
-    const interval = setInterval(fetchPatients, 10000);
+
+    async function syncAndFetch() {
+      try {
+        // Silently strike the sync endpoint to pull VAPI telemetry for pending calls
+        await fetch('/api/vapi/sync');
+      } catch (err) {
+        console.error("Failed background sync", err);
+      }
+      // Guarantee dashboard populates with newly synced data
+      await fetchPatients();
+    }
+
+    // Initial load runs the sync
+    syncAndFetch();
+    
+    // Auto-refresh loops exclusively via the sync mechanism every 15 seconds
+    const interval = setInterval(syncAndFetch, 15000);
     return () => clearInterval(interval);
   }, []);
 

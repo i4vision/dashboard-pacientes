@@ -12,6 +12,19 @@ function formatPhone(phoneNum) {
   return phoneNum.toString();
 }
 
+function formatDate(isoString) {
+  if (!isoString) return "";
+  const date = new Date(isoString);
+  if (isNaN(date.getTime())) return isoString; // Fallback if not proper ISO
+  
+  const dd = String(date.getDate()).padStart(2, '0');
+  const mm = String(date.getMonth() + 1).padStart(2, '0');
+  const hh = String(date.getHours()).padStart(2, '0');
+  const min = String(date.getMinutes()).padStart(2, '0');
+  
+  return `${dd}-${mm} ${hh}:${min} hs`;
+}
+
 export default function Home() {
   const [patients, setPatients] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -120,7 +133,7 @@ export default function Home() {
                   </tr>
                   {/* Row 3 Values */}
                   <tr className="value-row">
-                    <td><span className="value-link">{patient.fecha}</span></td>
+                    <td><span className="value-link">{formatDate(patient.fecha)}</span></td>
                     <td><span className="value-link">{patient.clinica}</span></td>
                     <td><span className="value-link">{patient.entidad}</span></td>
                     <td colSpan="2" className="empty-cell"></td>

@@ -19,7 +19,7 @@ export async function POST(request) {
     const body = await request.json();
     
     // Validate required fields
-    const requiredFields = ['nombres', 'apellidos', 'genero', 'documento', 'telefono', 'cita', 'cita_tipo', 'entidad', 'clinica', 'especialista', 'fecha'];
+    const requiredFields = ['nombres', 'apellidos', 'genero', 'documento', 'telefono', 'especialidad', 'cita_tipo', 'entidad', 'clinica', 'especialista', 'fecha'];
     for (const field of requiredFields) {
       if (!body[field]) {
         return NextResponse.json({ error: `Missing required field: ${field}` }, { status: 400 });
@@ -45,12 +45,13 @@ export async function POST(request) {
           genero: body.genero,
           documento: Number(body.documento),
           telefono: Number(body.telefono),
-          cita: body.cita,
+          especialidad: body.especialidad,
           cita_tipo: body.cita_tipo,
           entidad: body.entidad,
           clinica: body.clinica,
           especialista: body.especialista,
-          fecha: body.fecha
+          fecha: body.fecha,
+          vapi_call_id: body.vapi_call_id || null
         }
       ])
       .select();

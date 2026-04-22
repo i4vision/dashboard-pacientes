@@ -6,12 +6,16 @@ CREATE TABLE IF NOT EXISTS public.patients (
     genero TEXT NOT NULL CHECK (genero IN ('Femenino', 'Masculino')),
     documento BIGINT NOT NULL,
     telefono BIGINT NOT NULL,
-    cita TEXT NOT NULL,
+    especialidad TEXT NOT NULL,
     cita_tipo TEXT NOT NULL CHECK (cita_tipo IN ('Especialista', 'Estudio Clinico')),
     entidad TEXT NOT NULL,
     clinica TEXT NOT NULL CHECK (clinica IN ('Farallones', 'Palma Real')),
     especialista TEXT NOT NULL,
     fecha TEXT NOT NULL,
+    vapi_call_id TEXT,
+    sentiment TEXT,
+    transcript TEXT,
+    call_duration INTEGER,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 

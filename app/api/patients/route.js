@@ -26,6 +26,16 @@ export async function POST(request) {
       }
     }
 
+    // Auto-capitalize enums so 'femenino' or 'PALMA REAL' resolves cleanly
+    const capitalizeEnum = (str) => {
+      if (!str) return str;
+      return str.toLowerCase().split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+    };
+
+    body.genero = capitalizeEnum(body.genero);
+    body.cita_tipo = capitalizeEnum(body.cita_tipo);
+    body.clinica = capitalizeEnum(body.clinica);
+
     if (!['Femenino', 'Masculino'].includes(body.genero)) {
        return NextResponse.json({ error: 'invalid genero enum' }, { status: 400 });
     }

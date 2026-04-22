@@ -5,8 +5,9 @@
   --accent-glow: rgba(99, 102, 241, 0.4);
   --text-main: #f8fafc;
   --text-muted: #94a3b8;
-  --border-color: #2b323f;
-  --card-bg: rgba(21, 24, 30, 0.65);
+  --border-color: rgba(255, 255, 255, 0.1);
+  --card-bg: rgba(21, 24, 30, 0.85);
+  --value-color: #38bdf8; /* The 'blueish' link aesthetic from the screenshot */
   --success-color: #10b981;
   --warning-color: #f59e0b;
 }
@@ -22,7 +23,6 @@ body {
   background-color: var(--primary-bg);
   color: var(--text-main);
   min-height: 100vh;
-  /* Premium modern dynamic gradient overlay */
   background-image: 
     radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.08), transparent 35%),
     radial-gradient(circle at 90% 80%, rgba(16, 185, 129, 0.04), transparent 35%);
@@ -30,7 +30,7 @@ body {
 }
 
 .container {
-  max-width: 1300px;
+  max-width: 1400px;
   margin: 0 auto;
   padding: 3rem 2rem;
 }
@@ -47,90 +47,58 @@ h1 {
   text-shadow: 0 0 30px var(--accent-glow);
 }
 
-.dashboard-card {
+.patient-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.patient-card {
   background: var(--card-bg);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid var(--border-color);
-  border-radius: 20px;
-  padding: 0; /* padding logic moved to inner containers for edge-to-edge effects */
+  border-radius: 12px;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05);
   overflow: hidden;
 }
 
-.table-wrapper {
+.layout-table {
   width: 100%;
-  overflow-x: auto;
+  border-collapse: collapse;
+  text-align: center;
+  table-layout: fixed;
 }
 
-table {
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
-  text-align: left;
+.layout-table th, .layout-table td {
+  border: 1px solid var(--border-color);
+  padding: 0.85rem;
 }
 
-th {
-  background-color: rgba(0, 0, 0, 0.2);
-  color: var(--text-muted);
+.header-row th {
+  background-color: rgba(0, 0, 0, 0.3);
+  color: var(--text-main);
   font-weight: 600;
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  padding: 1.25rem 1.5rem;
-  border-bottom: 1px solid var(--border-color);
+  font-size: 0.85rem;
 }
 
-th:first-child {
-  padding-left: 2rem;
-}
-th:last-child {
-  padding-right: 2rem;
-}
-
-td {
-  padding: 1.25rem 1.5rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+.value-row td {
   font-size: 0.95rem;
-  transition: all 0.2s ease;
 }
 
-td:first-child {
-  padding-left: 2rem;
-}
-td:last-child {
-  padding-right: 2rem;
-}
-
-tr:last-child td {
-  border-bottom: none;
+.value-link {
+  color: var(--value-color);
+  cursor: default;
+  transition: opacity 0.2s;
 }
 
-tr:hover td {
-  background-color: rgba(255, 255, 255, 0.03);
+.value-link:hover {
+  opacity: 0.8;
 }
 
-.badge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.35rem 0.85rem;
-  border-radius: 9999px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  text-transform: capitalize;
-  white-space: nowrap;
-}
-
-.badge-femenino { background: rgba(236, 72, 153, 0.1); color: #f472b6; border: 1px solid rgba(236, 72, 153, 0.25); }
-.badge-masculino { background: rgba(56, 189, 248, 0.1); color: #7dd3fc; border: 1px solid rgba(56, 189, 248, 0.25); }
-.badge-especialista { background: rgba(139, 92, 246, 0.1); color: #a78bfa; border: 1px solid rgba(139, 92, 246, 0.25); }
-.badge-estudio { background: rgba(16, 185, 129, 0.1); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.25); }
-
-.clinic-pill {
-  color: #e2e8f0;
-  font-weight: 500;
+.empty-cell {
+  background-color: rgba(255, 255, 255, 0.01);
+  border-color: transparent; /* Make empty cells blend away slightly */
+  border-left: 1px solid var(--border-color);
 }
 
 /* Scrollbar styling for pure modern aesthetics */

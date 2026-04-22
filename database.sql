@@ -10,6 +10,8 @@ CREATE TABLE IF NOT EXISTS public.patients (
     cita_tipo TEXT NOT NULL CHECK (cita_tipo IN ('Especialista', 'Estudio Clinico')),
     entidad TEXT NOT NULL,
     clinica TEXT NOT NULL CHECK (clinica IN ('Farallones', 'Palma Real')),
+    especialista TEXT NOT NULL,
+    fecha TEXT NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 

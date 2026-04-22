@@ -19,7 +19,7 @@ export async function POST(request) {
     const body = await request.json();
     
     // Validate required fields
-    const requiredFields = ['nombres', 'apellidos', 'genero', 'documento', 'telefono', 'cita', 'cita_tipo', 'entidad', 'clinica'];
+    const requiredFields = ['nombres', 'apellidos', 'genero', 'documento', 'telefono', 'cita', 'cita_tipo', 'entidad', 'clinica', 'especialista', 'fecha'];
     for (const field of requiredFields) {
       if (!body[field]) {
         return NextResponse.json({ error: `Missing required field: ${field}` }, { status: 400 });
@@ -48,7 +48,9 @@ export async function POST(request) {
           cita: body.cita,
           cita_tipo: body.cita_tipo,
           entidad: body.entidad,
-          clinica: body.clinica
+          clinica: body.clinica,
+          especialista: body.especialista,
+          fecha: body.fecha
         }
       ])
       .select();

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 
 function formatPhone(phoneNum) {
-  if (!phoneNum) return "";
+  if (!phoneNum) return "N/A";
   const cleaned = ('' + phoneNum).replace(/\D/g, '');
   const match = cleaned.match(/^(\d{3})(\d{3})(\d{4})$/);
   if (match) {
@@ -13,7 +13,7 @@ function formatPhone(phoneNum) {
 }
 
 function formatDate(isoString) {
-  if (!isoString) return "";
+  if (!isoString) return "N/A";
   const date = new Date(isoString);
   if (isNaN(date.getTime())) return isoString; 
   
@@ -25,20 +25,18 @@ function formatDate(isoString) {
   return `${dd}-${mm} ${hh}:${min} hs`;
 }
 
+// Reusable SVG for Delete
+const TrashIcon = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 6h18"></path><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+);
+
 export default function Home() {
   const [patients, setPatients] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
-  // Filter state for toggling expanding transcripts
-  const [expandedTranscripts, setExpandedTranscripts] = useState({});
-
-  const toggleTranscript = (id) => {
-    setExpandedTranscripts(prev => ({
-      ...prev,
-      [id]: !prev[id]
-    }));
-  }
+  
+  // State for opening the interactive Modal
+  const [selectedPatient, setSelectedPatient] = useState(null);
 
   useEffect(() => {
     async function fetchPatients() {
@@ -60,29 +58,27 @@ export default function Home() {
 
     async function syncAndFetch() {
       try {
-        // Silently strike the sync endpoint to pull VAPI telemetry for pending calls
         await fetch('/api/vapi/sync');
       } catch (err) {
         console.error("Failed background sync", err);
       }
-      // Guarantee dashboard populates with newly synced data
       await fetchPatients();
     }
 
-    // Initial load runs the sync
     syncAndFetch();
-    
-    // Auto-refresh loops exclusively via the sync mechanism every 15 seconds
     const interval = setInterval(syncAndFetch, 15000);
     return () => clearInterval(interval);
   }, []);
 
-  const deletePatient = async (id) => {
+  const deletePatient = async (id, e) => {
+    e.stopPropagation(); // Prevents the Modal from firing when the delete button is clicked
     if (!confirm('Are you sure you want to delete this patient?')) return;
     try {
       const res = await fetch(`/api/patients/${id}`, { method: 'DELETE' });
       if (res.ok) {
         setPatients(patients.filter(p => p.id !== id));
+        // Close modal just in case they manage to delete while it's somehow hydrating
+        if (selectedPatient?.id === id) setSelectedPatient(null);
       } else {
         alert('Failed to delete');
       }
@@ -90,6 +86,13 @@ export default function Home() {
       console.error(err);
       alert('Error occurred while deleting');
     }
+  };
+
+  const getSentimentClass = (sentiment) => {
+    if (sentiment === 'Satisfied' || sentiment === 'Delighted') return "sentiment-badge positive-bg";
+    if (sentiment === 'Confused') return "sentiment-badge info-bg";
+    if (sentiment === 'Frustrated' || sentiment === 'Angry') return "sentiment-badge negative-bg";
+    return "sentiment-badge neutral-bg";
   };
 
   // Pre-calculate Aggregates
@@ -120,176 +123,178 @@ export default function Home() {
         </p>
       </div>
 
-      {/* Sentiment Grid Layout matching the Screenshot */}
       <div className="sentiment-grid">
-        {/* Satisfied */}
         <div className="sentiment-card satisfied">
-          <div className="icon-container">
-<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
-          </div>
-          <div className="data-container">
-            <span className="label">Satisfied</span>
-            <span className="count">{sentimentCounts.Satisfied}</span>
-          </div>
+          <div className="icon-container"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg></div>
+          <div className="data-container"><span className="label">Satisfied</span><span className="count">{sentimentCounts.Satisfied}</span></div>
         </div>
-
-        {/* Confused */}
         <div className="sentiment-card confused">
-          <div className="icon-container">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
-          </div>
-          <div className="data-container">
-            <span className="label">Confused</span>
-            <span className="count">{sentimentCounts.Confused}</span>
-          </div>
+          <div className="icon-container"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg></div>
+          <div className="data-container"><span className="label">Confused</span><span className="count">{sentimentCounts.Confused}</span></div>
         </div>
-
-        {/* Frustrated */}
         <div className="sentiment-card frustrated">
-          <div className="icon-container">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
-          </div>
-          <div className="data-container">
-            <span className="label">Frustrated</span>
-            <span className="count">{sentimentCounts.Frustrated}</span>
-          </div>
+          <div className="icon-container"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg></div>
+          <div className="data-container"><span className="label">Frustrated</span><span className="count">{sentimentCounts.Frustrated}</span></div>
         </div>
-
-        {/* Delighted */}
         <div className="sentiment-card delighted">
-          <div className="icon-container">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M8 14s1.5 2 4 2 4-2 4-2"></path><line x1="9" y1="9" x2="9.01" y2="9"></line><line x1="15" y1="9" x2="15.01" y2="9"></line></svg>
-          </div>
-          <div className="data-container">
-            <span className="label">Delighted</span>
-            <span className="count">{sentimentCounts.Delighted}</span>
-          </div>
+          <div className="icon-container"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M8 14s1.5 2 4 2 4-2 4-2"></path><line x1="9" y1="9" x2="9.01" y2="9"></line><line x1="15" y1="9" x2="15.01" y2="9"></line></svg></div>
+          <div className="data-container"><span className="label">Delighted</span><span className="count">{sentimentCounts.Delighted}</span></div>
         </div>
-
-        {/* Neutral */}
         <div className="sentiment-card neutral">
-          <div className="icon-container">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="8" y1="15" x2="16" y2="15"></line><line x1="9" y1="9" x2="9.01" y2="9"></line><line x1="15" y1="9" x2="15.01" y2="9"></line></svg>
-          </div>
-          <div className="data-container">
-            <span className="label">Neutral</span>
-            <span className="count">{sentimentCounts.Neutral}</span>
-          </div>
+          <div className="icon-container"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="8" y1="15" x2="16" y2="15"></line><line x1="9" y1="9" x2="9.01" y2="9"></line><line x1="15" y1="9" x2="15.01" y2="9"></line></svg></div>
+          <div className="data-container"><span className="label">Neutral</span><span className="count">{sentimentCounts.Neutral}</span></div>
         </div>
-
-        {/* Angry */}
         <div className="sentiment-card angry">
-          <div className="icon-container">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M8 15s1.5-2 4-2 4 2 4 2"></path><path d="M9 10l-1.5-1.5"></path><path d="M15 10l1.5-1.5"></path></svg>
-          </div>
-          <div className="data-container">
-            <span className="label">Angry</span>
-            <span className="count">{sentimentCounts.Angry}</span>
-          </div>
+          <div className="icon-container"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M8 15s1.5-2 4-2 4 2 4 2"></path><path d="M9 10l-1.5-1.5"></path><path d="M15 10l1.5-1.5"></path></svg></div>
+          <div className="data-container"><span className="label">Angry</span><span className="count">{sentimentCounts.Angry}</span></div>
         </div>
       </div>
 
       <div className="section-divider">
-        <h2>Patient Directory</h2>
+        <h2>Recent Calls</h2>
       </div>
       
-      {/* Patient List */}
+      {/* Patient List Model */}
       {loading ? (
-        <div className="skeleton-container">Loading patient records...</div>
+        <div className="skeleton-container">Loading records...</div>
       ) : error ? (
         <div className="error-alert">{error}</div>
       ) : patients.length === 0 ? (
-        <div className="empty-state">No patients connected yet. Waiting for incoming records.</div>
+        <div className="empty-state">No recent calls discovered.</div>
       ) : (
-        <div className="patient-list">
-          {patients.map((patient) => {
-             const hasCall = patient.vapi_call_id;
-             let sentimentClass = "sentiment-tag neutral-bg";
-             if (patient.sentiment === 'Satisfied' || patient.sentiment === 'Delighted') sentimentClass = "sentiment-tag positive-bg";
-             if (patient.sentiment === 'Confused') sentimentClass = "sentiment-tag info-bg";
-             if (patient.sentiment === 'Frustrated' || patient.sentiment === 'Angry') sentimentClass = "sentiment-tag negative-bg";
+        <div className="interactive-list">
+          {/* Main Titles */}
+          <div style={{ display: 'grid', gridTemplateColumns: '2fr 2fr 1.5fr 1.5fr auto', padding: '0.5rem 1.5rem 0', color: 'var(--text-muted)', fontSize: '0.8rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+             <span>Paciente</span>
+             <span>Especialidad</span>
+             <span>Fecha</span>
+             <span>Teléfono</span>
+             <span style={{ textAlign: "center", width: "40px" }}>Accion</span>
+          </div>
+          
+          {patients.map((patient) => (
+            <div 
+               className="list-row" 
+               key={patient.id} 
+               onClick={() => setSelectedPatient(patient)}
+            >
+               <div className="list-col">
+                  <span className="data-value" style={{ color: "white", fontWeight: 600, fontSize: "1.05rem" }}>
+                    {patient.nombres} {patient.apellidos}
+                  </span>
+               </div>
+               <div className="list-col">
+                  <span className="data-value" style={{ color: "#c084fc", background: "rgba(192, 132, 252, 0.1)", padding: "0.3rem 0.6rem", borderRadius: "6px", display: "inline-block", width: "fit-content", fontWeight: 500 }}>
+                    {patient.especialidad || "N/A"}
+                  </span>
+               </div>
+               <div className="list-col">
+                  <span className="data-value" style={{ color: "#34d399", fontWeight: 500 }}>
+                    {formatDate(patient.fecha)}
+                  </span>
+               </div>
+               <div className="list-col">
+                  <span className="data-value" style={{ color: "var(--text-muted)", letterSpacing: "0.05em" }}>
+                    {formatPhone(patient.telefono)}
+                  </span>
+               </div>
+               <div className="list-col" style={{ alignItems: "center", paddingRight: 0 }}>
+                  <button className="delete-action-btn" onClick={(e) => deletePatient(patient.id, e)} title="Delete Record">
+                     <TrashIcon />
+                  </button>
+               </div>
+            </div>
+          ))}
+        </div>
+      )}
 
-             return (
-              <div className="patient-card" key={patient.id}>
-                <table className="layout-table">
-                  <tbody>
-                    <tr className="header-row">
-                      <th>Paciente</th>
-                      <th>Género</th>
-                      <th>Documento</th>
-                      <th>Teléfono</th>
-                      <th style={{ textAlign: "center" }}>Accion</th>
-                    </tr>
-                    <tr className="value-row">
-                      <td><span className="value-link">{patient.nombres} {patient.apellidos}</span></td>
-                      <td><span className="value-link">{patient.genero}</span></td>
-                      <td><span className="value-link">{patient.documento}</span></td>
-                      <td><span className="value-link">{formatPhone(patient.telefono)}</span></td>
-                      <td style={{ textAlign: "center" }}>
-                        <button onClick={() => deletePatient(patient.id)} className="delete-btn" title="Delete patient">
-                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 6h18"></path><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-                        </button>
-                      </td>
-                    </tr>
+      {/* Floating Detailed Modal */}
+      {selectedPatient && (
+        <div className="modal-overlay" onClick={() => setSelectedPatient(null)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+             <div className="modal-header">
+                <div>
+                   <span className="data-label">Paciente</span>
+                   <h3>{selectedPatient.nombres} {selectedPatient.apellidos}</h3>
+                </div>
+                <button className="close-btn" onClick={() => setSelectedPatient(null)}>
+                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+             </div>
+             
+             <div className="modal-body">
+                {/* Core Data */}
+                <div className="data-grid">
+                   <div className="metric">
+                     <span className="data-label">Documento</span>
+                     <span className="data-value">{selectedPatient.documento || "N/A"}</span>
+                   </div>
+                   <div className="metric">
+                     <span className="data-label">Género</span>
+                     <span className="data-value">{selectedPatient.genero || "N/A"}</span>
+                   </div>
+                   <div className="metric">
+                     <span className="data-label">Teléfono</span>
+                     <span className="data-value">{formatPhone(selectedPatient.telefono)}</span>
+                   </div>
+                </div>
 
-                    <tr className="header-row">
-                      <th>Especialidad</th>
-                      <th>Tipo de Cita</th>
-                      <th>Especialista</th>
-                      <th colSpan="2" className="empty-cell"></th>
-                    </tr>
-                    <tr className="value-row">
-                      <td><span className="value-link">{patient.especialidad}</span></td>
-                      <td><span className="value-link">{patient.cita_tipo}</span></td>
-                      <td><span className="value-link">{patient.especialista}</span></td>
-                      <td colSpan="2" className="empty-cell"></td>
-                    </tr>
+                <div className="data-grid">
+                   <div className="metric">
+                     <span className="data-label">Especialidad</span>
+                     <span className="data-value highlight">{selectedPatient.especialidad || "N/A"}</span>
+                   </div>
+                   <div className="metric">
+                     <span className="data-label">Especialista</span>
+                     <span className="data-value highlight">{selectedPatient.especialista || "N/A"}</span>
+                   </div>
+                   <div className="metric">
+                     <span className="data-label">Tipo de Cita</span>
+                     <span className="data-value highlight">{selectedPatient.cita_tipo || "N/A"}</span>
+                   </div>
+                   <div className="metric">
+                     <span className="data-label">Clínica</span>
+                     <span className="data-value highlight">{selectedPatient.clinica || "N/A"}</span>
+                   </div>
+                   <div className="metric">
+                     <span className="data-label">Entidad</span>
+                     <span className="data-value highlight">{selectedPatient.entidad || "N/A"}</span>
+                   </div>
+                </div>
 
-                    <tr className="header-row">
-                      <th>Fecha</th>
-                      <th>Clínica</th>
-                      <th>Entidad</th>
-                      <th colSpan="2" className="empty-cell"></th>
-                    </tr>
-                    <tr className="value-row">
-                      <td><span className="value-link">{formatDate(patient.fecha)}</span></td>
-                      <td><span className="value-link">{patient.clinica}</span></td>
-                      <td><span className="value-link">{patient.entidad}</span></td>
-                      <td colSpan="2" className="empty-cell"></td>
-                    </tr>
+                {/* AI Overlay Box */}
+                {selectedPatient.vapi_call_id ? (
+                  <>
+                    <span className="data-label">AI Telemetry Analytics</span>
+                    <div className="ai-telemetry-block">
+                       <div className="metric">
+                         <span className="data-label">AI Calculated Sentiment</span>
+                         <span className={getSentimentClass(selectedPatient.sentiment)}>
+                           {selectedPatient.sentiment || "Analyzing context..."}
+                         </span>
+                       </div>
+                       <div className="metric">
+                         <span className="data-label">Call Duration</span>
+                         <span className="data-value">{selectedPatient.call_duration || "0"}s</span>
+                       </div>
+                       <div className="metric" style={{ marginLeft: "auto" }}>
+                         <span className="data-label">VAPI Routing Tag</span>
+                         <span className="data-value" style={{ fontFamily: "monospace", opacity: 0.7 }}>{selectedPatient.vapi_call_id}</span>
+                       </div>
+                    </div>
                     
-                    {/* Call Analysis Data */}
-                    {hasCall && (
-                      <>
-                        <tr className="header-row call-row-header">
-                          <th colSpan="5">AI Telemetry & Analysis</th>
-                        </tr>
-                        <tr className="value-row call-data-row">
-                          <td colSpan="5">
-                             <div className="call-metrics-bar">
-                                <span className={sentimentClass}>{patient.sentiment || "Analyzing..."}</span>
-                                <span className="duration-tag">Duration: {patient.call_duration || 0}s</span>
-                                <span className="call-id-tag">Call ID: {patient.vapi_call_id}</span>
-                                
-                                <button className="transcript-toggle" onClick={() => toggleTranscript(patient.id)}>
-                                  {expandedTranscripts[patient.id] ? "Hide Transcript" : "Read Transcript"}
-                                </button>
-                             </div>
-                             
-                             {expandedTranscripts[patient.id] && (
-                               <div className="transcript-box">
-                                 {patient.transcript ? patient.transcript : "No transcript logged yet. Hang tight if the call just ended."}
-                               </div>
-                             )}
-                          </td>
-                        </tr>
-                      </>
-                    )}
-                  </tbody>
-                </table>
-              </div>
-             );
-          })}
+                    <div className="transcript-area">
+                       <span className="data-label">Raw Phone Transcript</span>
+                       <p>{selectedPatient.transcript || "Transcript processing in pipeline..."}</p>
+                    </div>
+                  </>
+                ) : (
+                  <div className="empty-state" style={{ padding: "2rem", border: "1px dashed rgba(255,255,255,0.1)", borderRadius: "12px" }}>
+                     No automated call telemetry found for this patient payload.
+                  </div>
+                )}
+             </div>
+          </div>
         </div>
       )}
     </main>

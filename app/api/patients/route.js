@@ -34,7 +34,7 @@ export async function POST(request) {
        console.error(`Patient Upload Rejected: Invalid genero enum - ${body.genero}`);
        return NextResponse.json({ error: 'invalid genero enum' }, { status: 400 });
     }
-    if (body.especialidad_tipo && !['Especialista', 'Estudio Clinico'].includes(body.especialidad_tipo)) {
+    if (body.especialidad_tipo && !['Especialista', 'Estudio Clinico', 'Cita Con Especialista'].includes(body.especialidad_tipo)) {
        console.error(`Patient Upload Rejected: Invalid especialidad_tipo enum - ${body.especialidad_tipo}`);
        return NextResponse.json({ error: 'invalid especialidad_tipo enum' }, { status: 400 });
     }

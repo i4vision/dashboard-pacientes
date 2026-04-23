@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS public.patients (
     documento BIGINT,
     telefono BIGINT,
     especialidad TEXT,
-    cita_tipo TEXT CHECK (cita_tipo IN ('Especialista', 'Estudio Clinico')),
+    cita_tipo TEXT CHECK (cita_tipo IN ('Especialista', 'Estudio Clinico', 'Cita Con Especialista')),
     entidad TEXT,
     clinica TEXT CHECK (clinica IN ('Farallones', 'Palma Real')),
     especialista TEXT,

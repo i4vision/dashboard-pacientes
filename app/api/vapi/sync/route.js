@@ -33,6 +33,14 @@ export async function GET() {
     for (const patient of pendingCalls) {
       const callId = patient.vapi_call_id;
 
+      // Safe Check: Trap structural garbage payloads like "-" or missing keys directly
+      if (!callId || callId.length < 5 || callId === "-") {
+         console.warn(`Invalid vapi_call_id detected (${callId}). Clearing from sync queue.`);
+         // Write a dummy string to transcript so the `.is('transcript', null)` stops executing on this!
+         await supabase.from('patients').update({ transcript: "Invalid VAPI Call ID Format Provided", sentiment: "Neutral" }).eq('vapi_call_id', callId);
+         continue;
+      }
+
       try {
         const vapiRes = await fetch(`https://api.vapi.ai/call/${callId}`, {
           method: 'GET',

@@ -18,14 +18,7 @@ export async function POST(request) {
   try {
     const body = await request.json();
     
-    // Validate required fields
-    const requiredFields = ['nombres', 'apellidos', 'genero', 'documento', 'telefono', 'especialidad', 'especialidad_tipo', 'plan_medico', 'clinica', 'especialista', 'fecha'];
-    for (const field of requiredFields) {
-      if (!body[field]) {
-        console.error(`Patient Upload Rejected: Missing required field: ${field}`);
-        return NextResponse.json({ error: `Missing required field: ${field}` }, { status: 400 });
-      }
-    }
+    // Skipping required fields constraint to allow highly permissive uploading behavior
 
     // Auto-capitalize enums so 'femenino' or 'PALMA REAL' resolves cleanly
     const capitalizeEnum = (str) => {
@@ -37,15 +30,15 @@ export async function POST(request) {
     body.especialidad_tipo = capitalizeEnum(body.especialidad_tipo);
     body.clinica = capitalizeEnum(body.clinica);
 
-    if (!['Femenino', 'Masculino'].includes(body.genero)) {
+    if (body.genero && !['Femenino', 'Masculino'].includes(body.genero)) {
        console.error(`Patient Upload Rejected: Invalid genero enum - ${body.genero}`);
        return NextResponse.json({ error: 'invalid genero enum' }, { status: 400 });
     }
-    if (!['Especialista', 'Estudio Clinico'].includes(body.especialidad_tipo)) {
+    if (body.especialidad_tipo && !['Especialista', 'Estudio Clinico'].includes(body.especialidad_tipo)) {
        console.error(`Patient Upload Rejected: Invalid especialidad_tipo enum - ${body.especialidad_tipo}`);
        return NextResponse.json({ error: 'invalid especialidad_tipo enum' }, { status: 400 });
     }
-    if (!['Farallones', 'Palma Real'].includes(body.clinica)) {
+    if (body.clinica && !['Farallones', 'Palma Real'].includes(body.clinica)) {
        console.error(`Patient Upload Rejected: Invalid clinica enum - ${body.clinica}`);
        return NextResponse.json({ error: 'invalid clinica enum' }, { status: 400 });
     }
@@ -54,17 +47,17 @@ export async function POST(request) {
       .from('patients')
       .insert([
         {
-          nombres: body.nombres,
-          apellidos: body.apellidos,
-          genero: body.genero,
-          documento: Number(body.documento),
-          telefono: Number(body.telefono),
-          especialidad: body.especialidad,
-          cita_tipo: body.especialidad_tipo,
-          entidad: body.plan_medico,
-          clinica: body.clinica,
-          especialista: body.especialista,
-          fecha: body.fecha,
+          nombres: body.nombres || null,
+          apellidos: body.apellidos || null,
+          genero: body.genero || null,
+          documento: body.documento ? Number(body.documento) : null,
+          telefono: body.telefono ? Number(body.telefono) : null,
+          especialidad: body.especialidad || null,
+          cita_tipo: body.especialidad_tipo || null,
+          entidad: body.plan_medico || null,
+          clinica: body.clinica || null,
+          especialista: body.especialista || null,
+          fecha: body.fecha || null,
           vapi_call_id: body.vapi_call_id || null
         }
       ])

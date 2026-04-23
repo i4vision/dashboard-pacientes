@@ -57,39 +57,84 @@ h1 {
   color: white;
 }
 
-.section-divider {
-  margin-bottom: 2rem;
-  margin-top: 2rem;
+/* Master Header Layout */
+.dashboard-top-section {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  border-bottom: 1px solid var(--border-color);
-  padding-bottom: 1rem;
+  align-items: flex-end;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  gap: 2rem;
 }
 
-.section-divider h2 {
-  font-size: 1.4rem;
-  font-weight: 600;
-  color: #e2e8f0;
-}
-
-/* Emotions Dashboard Logic */
 .metrics-header .subtitle {
   color: var(--text-muted);
   font-size: 0.95rem;
-  margin-bottom: 2rem;
-  display: flex;
-  align-items: center;
-  gap: 1.5rem;
-  flex-wrap: wrap;
 }
 
-.metadata-tag {
-  background: var(--border-color);
-  padding: 0.3rem 0.8rem;
-  border-radius: 8px;
+/* Massive Hero Metrics */
+.hero-metrics-container {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.hero-metric-card {
+  background: linear-gradient(180deg, rgba(30, 41, 59, 0.4) 0%, rgba(15, 23, 42, 0.4) 100%);
+  border: 1px solid var(--border-color);
+  border-top: 2px solid var(--accent-color);
+  padding: 1.5rem 2rem;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 160px;
+}
+
+.hero-metric-card .hero-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.hero-metric-card .hero-value {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: white;
+  line-height: 1;
+}
+
+/* Hide/Show Toggle */
+.toggle-analytics-btn {
+  background: transparent;
+  color: #818cf8;
+  border: 1px solid rgba(129, 140, 248, 0.2);
+  padding: 0.6rem 1.2rem;
+  border-radius: 30px;
   font-size: 0.85rem;
-  color: #cbd5e1;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.2s;
+  margin-bottom: 2rem;
+}
+
+.toggle-analytics-btn:hover {
+  background: rgba(129, 140, 248, 0.1);
+  border-color: rgba(129, 140, 248, 0.4);
+}
+
+.toggle-icon {
+  transition: transform 0.3s ease;
+}
+
+.toggle-icon.open {
+  transform: rotate(180deg);
 }
 
 .sentiment-grid {

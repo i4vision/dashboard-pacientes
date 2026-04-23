@@ -37,6 +37,7 @@ export default function Home() {
   
   // State for opening the interactive Modal
   const [selectedPatient, setSelectedPatient] = useState(null);
+  const [showAnalytics, setShowAnalytics] = useState(false);
 
   useEffect(() => {
     async function fetchPatients() {
@@ -113,47 +114,59 @@ export default function Home() {
 
   return (
     <main className="container">
-      {/* Global Dashboard Header */}
-      <div className="metrics-header">
-        <h1>Emotions Dashboard</h1>
-        <p className="subtitle">
-          Dynamic overview of caller sentiment explicitly categorized by AI analysis. 
-          <span className="metadata-tag">Total Calls Analyzed: {totalCalls}</span>
-          <span className="metadata-tag">Average Duration: {avgDuration}s</span>
-        </p>
-      </div>
-
-      <div className="sentiment-grid">
-        <div className="sentiment-card satisfied">
-          <div className="icon-container"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg></div>
-          <div className="data-container"><span className="label">Satisfied</span><span className="count">{sentimentCounts.Satisfied}</span></div>
+      {/* Global Dashboard Header & Hero Metrics */}
+      <div className="dashboard-top-section">
+        <div className="metrics-header">
+          <h1>Emotions Dashboard</h1>
+          <p className="subtitle">Dynamic overview of caller sentiment explicitly categorized by AI analysis.</p>
         </div>
-        <div className="sentiment-card confused">
-          <div className="icon-container"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg></div>
-          <div className="data-container"><span className="label">Confused</span><span className="count">{sentimentCounts.Confused}</span></div>
-        </div>
-        <div className="sentiment-card frustrated">
-          <div className="icon-container"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg></div>
-          <div className="data-container"><span className="label">Frustrated</span><span className="count">{sentimentCounts.Frustrated}</span></div>
-        </div>
-        <div className="sentiment-card delighted">
-          <div className="icon-container"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M8 14s1.5 2 4 2 4-2 4-2"></path><line x1="9" y1="9" x2="9.01" y2="9"></line><line x1="15" y1="9" x2="15.01" y2="9"></line></svg></div>
-          <div className="data-container"><span className="label">Delighted</span><span className="count">{sentimentCounts.Delighted}</span></div>
-        </div>
-        <div className="sentiment-card neutral">
-          <div className="icon-container"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="8" y1="15" x2="16" y2="15"></line><line x1="9" y1="9" x2="9.01" y2="9"></line><line x1="15" y1="9" x2="15.01" y2="9"></line></svg></div>
-          <div className="data-container"><span className="label">Neutral</span><span className="count">{sentimentCounts.Neutral}</span></div>
-        </div>
-        <div className="sentiment-card angry">
-          <div className="icon-container"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M8 15s1.5-2 4-2 4 2 4 2"></path><path d="M9 10l-1.5-1.5"></path><path d="M15 10l1.5-1.5"></path></svg></div>
-          <div className="data-container"><span className="label">Angry</span><span className="count">{sentimentCounts.Angry}</span></div>
+        
+        <div className="hero-metrics-container">
+           <div className="hero-metric-card">
+              <span className="hero-label">Total Calls</span>
+              <span className="hero-value">{totalCalls}</span>
+           </div>
+           <div className="hero-metric-card">
+              <span className="hero-label">Avg Duration</span>
+              <span className="hero-value">{avgDuration}s</span>
+           </div>
         </div>
       </div>
 
-      <div className="section-divider">
-        <h2>Recent Calls</h2>
-      </div>
-      
+      <button className="toggle-analytics-btn" onClick={() => setShowAnalytics(!showAnalytics)}>
+         {showAnalytics ? "Hide AI Sentiment Metrics" : "View AI Sentiment Metrics"}
+         <svg className={`toggle-icon ${showAnalytics ? 'open' : ''}`} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+      </button>
+
+      {showAnalytics && (
+        <div className="sentiment-grid">
+          <div className="sentiment-card satisfied">
+            <div className="icon-container"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg></div>
+            <div className="data-container"><span className="label">Satisfied</span><span className="count">{sentimentCounts.Satisfied}</span></div>
+          </div>
+          <div className="sentiment-card confused">
+            <div className="icon-container"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg></div>
+            <div className="data-container"><span className="label">Confused</span><span className="count">{sentimentCounts.Confused}</span></div>
+          </div>
+          <div className="sentiment-card frustrated">
+            <div className="icon-container"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg></div>
+            <div className="data-container"><span className="label">Frustrated</span><span className="count">{sentimentCounts.Frustrated}</span></div>
+          </div>
+          <div className="sentiment-card delighted">
+            <div className="icon-container"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M8 14s1.5 2 4 2 4-2 4-2"></path><line x1="9" y1="9" x2="9.01" y2="9"></line><line x1="15" y1="9" x2="15.01" y2="9"></line></svg></div>
+            <div className="data-container"><span className="label">Delighted</span><span className="count">{sentimentCounts.Delighted}</span></div>
+          </div>
+          <div className="sentiment-card neutral">
+            <div className="icon-container"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="8" y1="15" x2="16" y2="15"></line><line x1="9" y1="9" x2="9.01" y2="9"></line><line x1="15" y1="9" x2="15.01" y2="9"></line></svg></div>
+            <div className="data-container"><span className="label">Neutral</span><span className="count">{sentimentCounts.Neutral}</span></div>
+          </div>
+          <div className="sentiment-card angry">
+            <div className="icon-container"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M8 15s1.5-2 4-2 4 2 4 2"></path><path d="M9 10l-1.5-1.5"></path><path d="M15 10l1.5-1.5"></path></svg></div>
+            <div className="data-container"><span className="label">Angry</span><span className="count">{sentimentCounts.Angry}</span></div>
+          </div>
+        </div>
+      )}
+
       {/* Patient List Model */}
       {loading ? (
         <div className="skeleton-container">Loading records...</div>

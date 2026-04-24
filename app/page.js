@@ -57,18 +57,7 @@ export default function Home() {
       }
     }
 
-    async function syncAndFetch() {
-      try {
-        await fetch('/api/vapi/sync');
-      } catch (err) {
-        console.error("Failed background sync", err);
-      }
-      await fetchPatients();
-    }
-
-    syncAndFetch();
-    const interval = setInterval(syncAndFetch, 15000);
-    return () => clearInterval(interval);
+    fetchPatients();
   }, []);
 
   const deletePatient = async (id, e) => {

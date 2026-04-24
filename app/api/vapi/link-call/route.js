@@ -26,8 +26,8 @@ export async function POST(req) {
     // 1. Locate the absolute most recently created Patient
     const { data: latestPatients, error: fetchErr } = await supabase
        .from('patients')
-       .select('id')
-       .order('id', { ascending: false })
+       .select('id, created_at')
+       .order('created_at', { ascending: false })
        .limit(1);
 
     if (fetchErr || !latestPatients || latestPatients.length === 0) {

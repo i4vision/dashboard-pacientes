@@ -67,7 +67,7 @@ export async function POST(req) {
            messages: [
              {
                role: "system",
-               content: "You are an analytical sentiment classifier. Read the transcript and respond with EXACTLY ONE of the following words describing the caller's overall emotional state: Satisfied, Confused, Frustrated, Delighted, Neutral, Angry. Do not provide any other text."
+               content: "You are an analytical sentiment classifier. Read the transcript and respond with EXACTLY ONE of the following words describing the caller's overall emotional state: Satisfied, Frustrated, Neutral, Angry. Do not provide any other text."
              },
              {
                role: "user",
@@ -79,7 +79,7 @@ export async function POST(req) {
          });
          
          const rawOutput = aiResponse.choices[0]?.message?.content?.trim();
-         const validSentiments = ["Satisfied", "Confused", "Frustrated", "Delighted", "Neutral", "Angry"];
+         const validSentiments = ["Satisfied", "Frustrated", "Neutral", "Angry"];
          
          if (validSentiments.includes(rawOutput)) {
            sentiment = rawOutput;

@@ -79,8 +79,7 @@ export default function Home() {
   };
 
   const getSentimentClass = (sentiment) => {
-    if (sentiment === 'Satisfied' || sentiment === 'Delighted') return "sentiment-badge positive-bg";
-    if (sentiment === 'Confused') return "sentiment-badge info-bg";
+    if (sentiment === 'Satisfied') return "sentiment-badge positive-bg";
     if (sentiment === 'Frustrated' || sentiment === 'Angry') return "sentiment-badge negative-bg";
     return "sentiment-badge neutral-bg";
   };
@@ -94,9 +93,7 @@ export default function Home() {
 
   const sentimentCounts = {
     Satisfied: patients.filter(p => p.sentiment === "Satisfied").length,
-    Confused: patients.filter(p => p.sentiment === "Confused").length,
     Frustrated: patients.filter(p => p.sentiment === "Frustrated").length,
-    Delighted: patients.filter(p => p.sentiment === "Delighted").length,
     Neutral: patients.filter(p => p.sentiment === "Neutral").length,
     Angry: patients.filter(p => p.sentiment === "Angry").length,
   };
@@ -133,17 +130,9 @@ export default function Home() {
             <div className="icon-container"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg></div>
             <div className="data-container"><span className="label">Satisfied</span><span className="count">{sentimentCounts.Satisfied}</span></div>
           </div>
-          <div className="sentiment-card confused">
-            <div className="icon-container"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg></div>
-            <div className="data-container"><span className="label">Confused</span><span className="count">{sentimentCounts.Confused}</span></div>
-          </div>
           <div className="sentiment-card frustrated">
             <div className="icon-container"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg></div>
             <div className="data-container"><span className="label">Frustrated</span><span className="count">{sentimentCounts.Frustrated}</span></div>
-          </div>
-          <div className="sentiment-card delighted">
-            <div className="icon-container"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M8 14s1.5 2 4 2 4-2 4-2"></path><line x1="9" y1="9" x2="9.01" y2="9"></line><line x1="15" y1="9" x2="15.01" y2="9"></line></svg></div>
-            <div className="data-container"><span className="label">Delighted</span><span className="count">{sentimentCounts.Delighted}</span></div>
           </div>
           <div className="sentiment-card neutral">
             <div className="icon-container"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="8" y1="15" x2="16" y2="15"></line><line x1="9" y1="9" x2="9.01" y2="9"></line><line x1="15" y1="9" x2="15.01" y2="9"></line></svg></div>

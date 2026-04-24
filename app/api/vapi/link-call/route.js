@@ -50,6 +50,7 @@ export async function POST(req) {
 
     const callData = await vapiRes.json();
     const transcript = callData.transcript || "No transcript provided";
+    const recordingUrl = callData.recordingUrl || null;
     
     let durationSeconds = 0;
     if (callData.startedAt && callData.endedAt) {
@@ -95,6 +96,7 @@ export async function POST(req) {
        .from('patients')
        .update({
          vapi_call_id: callId,
+         recording_url: recordingUrl,
          sentiment: sentiment,
          transcript: transcript,
          call_duration: durationSeconds

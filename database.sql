@@ -13,6 +13,7 @@ CREATE TABLE IF NOT EXISTS public.patients (
     especialista TEXT,
     fecha TEXT,
     vapi_call_id TEXT,
+    recording_url TEXT,
     sentiment TEXT,
     transcript TEXT,
     call_duration INTEGER,

@@ -278,6 +278,13 @@ export default function Home() {
                        <span className="data-label">Raw Phone Transcript</span>
                        <p>{selectedPatient.transcript || "Transcript processing in pipeline..."}</p>
                     </div>
+                    
+                    {selectedPatient.recording_url && (
+                       <div style={{ marginTop: "1rem", background: "rgba(0,0,0,0.3)", padding: "1.5rem", borderRadius: "12px", border: "1px solid var(--border-color)" }}>
+                          <span className="data-label">Call Audio Recording</span>
+                          <audio controls src={selectedPatient.recording_url} style={{ width: "100%", marginTop: "0.5rem", outline: "none" }} />
+                       </div>
+                    )}
                   </>
                 ) : (
                   <div className="empty-state" style={{ padding: "2rem", border: "1px dashed rgba(255,255,255,0.1)", borderRadius: "12px" }}>

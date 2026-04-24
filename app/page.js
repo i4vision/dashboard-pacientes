@@ -327,7 +327,7 @@ export default function Home() {
                     
                     <div className="transcript-area">
                        <span className="data-label">Raw Phone Transcript</span>
-                       <p>{selectedPatient.transcript || "Transcript processing in pipeline..."}</p>
+                       <p>{(selectedPatient.transcript === null || selectedPatient.transcript === undefined) ? "Transcript processing in pipeline..." : selectedPatient.transcript}</p>
                     </div>
                     
                     {selectedPatient.recording_url && (

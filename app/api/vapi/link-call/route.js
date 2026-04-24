@@ -44,7 +44,7 @@ export async function POST(req) {
 
     if (!vapiRes.ok) {
        // Bind the Call ID structurally but log the error if VAPI rejects it so it doesn't break CRM association
-       await supabase.from('patients').update({ vapi_call_id: callId, transcript: "Invalid or Unavailable VAPI Call Data", sentiment: "Neutral" }).eq('id', patientId);
+       await supabase.from('patients').update({ vapi_call_id: callId, transcript: "", sentiment: "Neutral" }).eq('id', patientId);
        return NextResponse.json({ error: "Failed to validate call actively from VAPI, but ID mapped securely as a neutral fallback", patientLinked: patientId }, { status: 206 });
     }
 

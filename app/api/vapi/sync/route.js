@@ -37,7 +37,7 @@ export async function GET() {
       if (!callId || callId.length < 5 || callId === "-") {
          console.warn(`Invalid vapi_call_id detected (${callId}). Clearing from sync queue.`);
          // Write a dummy string to transcript so the `.is('transcript', null)` stops executing on this!
-         await supabase.from('patients').update({ transcript: "Invalid VAPI Call ID Format Provided", sentiment: "Neutral" }).eq('vapi_call_id', callId);
+         await supabase.from('patients').update({ transcript: "", sentiment: "Neutral" }).eq('vapi_call_id', callId);
          continue;
       }
 

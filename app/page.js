@@ -106,7 +106,7 @@ export default function Home() {
       {/* Global Dashboard Header & Hero Metrics */}
       <div className="dashboard-top-section">
         <div className="metrics-header">
-          <h1>Emotions Dashboard</h1>
+          <h1>Katia Dashboard</h1>
           <p className="subtitle">Dynamic overview of caller sentiment explicitly categorized by AI analysis.</p>
         </div>
         

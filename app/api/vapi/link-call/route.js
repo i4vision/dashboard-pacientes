@@ -49,7 +49,8 @@ export async function POST(req) {
     }
 
     const callData = await vapiRes.json();
-    const transcript = callData.transcript || "No transcript provided";
+    const rawTranscript = callData.transcript || "No transcript provided";
+    const transcript = rawTranscript.replaceAll("AI:", "Katia:");
     const recordingUrl = callData.recordingUrl || null;
     
     let durationSeconds = 0;

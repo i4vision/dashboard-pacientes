@@ -84,6 +84,16 @@ export default function Home() {
     return "sentiment-badge neutral-bg";
   };
 
+  const getSentimentEmoji = (sentiment) => {
+    switch (sentiment) {
+      case 'Satisfied': return '😊';
+      case 'Frustrated': return '😟';
+      case 'Angry': return '😡';
+      case 'Neutral': return '😐';
+      default: return '⏳';
+    }
+  };
+
   // Pre-calculate Aggregates
   const totalCalls = patients.filter(p => p.vapi_call_id).length;
   const callsWithDuration = patients.filter(p => p.call_duration > 0);
@@ -155,11 +165,12 @@ export default function Home() {
       ) : (
         <div className="interactive-list">
           {/* Main Titles */}
-          <div style={{ display: 'grid', gridTemplateColumns: '2fr 2fr 1.5fr 1.5fr auto', padding: '0.5rem 1.5rem 0', color: 'var(--text-muted)', fontSize: '0.8rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '2fr 2fr 1.5fr 1.5fr 60px auto', padding: '0.5rem 1.5rem 0', color: 'var(--text-muted)', fontSize: '0.8rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
              <span>Paciente</span>
              <span>Especialidad</span>
              <span>Fecha</span>
              <span>Teléfono</span>
+             <span style={{ textAlign: "center" }}>AI</span>
              <span style={{ textAlign: "center", width: "40px" }}>Accion</span>
           </div>
           
@@ -187,6 +198,11 @@ export default function Home() {
                <div className="list-col">
                   <span className="data-value" style={{ color: "var(--text-muted)", letterSpacing: "0.05em" }}>
                     {formatPhone(patient.telefono)}
+                  </span>
+               </div>
+               <div className="list-col" style={{ alignItems: "center", justifyContent: "center", paddingRight: 0 }} title={`Sentiment: ${patient.sentiment || 'Pending'}`}>
+                  <span style={{ fontSize: "1.4rem" }}>
+                    {getSentimentEmoji(patient.sentiment)}
                   </span>
                </div>
                <div className="list-col" style={{ alignItems: "center", paddingRight: 0 }}>

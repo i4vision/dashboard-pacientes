@@ -175,17 +175,27 @@ export default function Home() {
              
              <div style={{ display: "flex", gap: "0.8rem", alignItems: "center" }}>
                 <span style={{ fontSize: "0.8rem", color: "var(--text-muted)", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em" }}>Filter Katia:</span>
-                <select 
-                   value={sentimentFilter}
-                   onChange={(e) => setSentimentFilter(e.target.value)}
-                   style={{ background: "rgba(0,0,0,0.5)", color: "white", padding: "0.5rem 1rem", borderRadius: "8px", border: "1px solid var(--border-color)", outline: "none", cursor: "pointer", fontSize: "0.9rem" }}
-                >
-                   <option value="All">All Calls</option>
-                   <option value="Satisfied">Satisfied</option>
-                   <option value="Frustrated">Frustrated</option>
-                   <option value="Neutral">Neutral</option>
-                   <option value="Angry">Angry</option>
-                </select>
+                <div style={{ display: "flex", background: "rgba(255,255,255,0.03)", padding: "0.25rem", borderRadius: "30px", border: "1px solid var(--border-color)" }}>
+                   {['All', 'Satisfied', 'Frustrated', 'Neutral', 'Angry'].map(filter => (
+                      <button 
+                         key={filter}
+                         onClick={() => setSentimentFilter(filter)}
+                         style={{
+                            padding: "0.4rem 1rem",
+                            borderRadius: "30px",
+                            fontSize: "0.8rem",
+                            fontWeight: 600,
+                            cursor: "pointer",
+                            border: "none",
+                            transition: "all 0.2s",
+                            background: sentimentFilter === filter ? "var(--accent-color)" : "transparent",
+                            color: sentimentFilter === filter ? "white" : "var(--text-muted)",
+                         }}
+                      >
+                         {filter === 'All' ? 'All Calls' : filter}
+                      </button>
+                   ))}
+                </div>
              </div>
           </div>
 

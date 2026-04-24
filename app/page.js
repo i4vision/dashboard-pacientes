@@ -38,6 +38,7 @@ export default function Home() {
   // State for opening the interactive Modal
   const [selectedPatient, setSelectedPatient] = useState(null);
   const [showAnalytics, setShowAnalytics] = useState(false);
+  const [sentimentFilter, setSentimentFilter] = useState('All');
 
   useEffect(() => {
     async function fetchPatients() {
@@ -108,6 +109,10 @@ export default function Home() {
     Angry: patients.filter(p => p.sentiment === "Angry").length,
   };
 
+  const filteredPatients = sentimentFilter === 'All' 
+    ? patients 
+    : patients.filter(p => p.sentiment === sentimentFilter);
+
   return (
     <main className="container">
       {/* Global Dashboard Header & Hero Metrics */}
@@ -164,6 +169,26 @@ export default function Home() {
         <div className="empty-state">No recent calls discovered.</div>
       ) : (
         <div className="interactive-list">
+          {/* Header Layout With Filter */}
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem", padding: "0 0.5rem" }}>
+             <h2 style={{ fontSize: "1.2rem", fontWeight: 600, color: "white" }}>Recent Calls</h2>
+             
+             <div style={{ display: "flex", gap: "0.8rem", alignItems: "center" }}>
+                <span style={{ fontSize: "0.8rem", color: "var(--text-muted)", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em" }}>Filter Katia:</span>
+                <select 
+                   value={sentimentFilter}
+                   onChange={(e) => setSentimentFilter(e.target.value)}
+                   style={{ background: "rgba(0,0,0,0.5)", color: "white", padding: "0.5rem 1rem", borderRadius: "8px", border: "1px solid var(--border-color)", outline: "none", cursor: "pointer", fontSize: "0.9rem" }}
+                >
+                   <option value="All">All Calls</option>
+                   <option value="Satisfied">Satisfied</option>
+                   <option value="Frustrated">Frustrated</option>
+                   <option value="Neutral">Neutral</option>
+                   <option value="Angry">Angry</option>
+                </select>
+             </div>
+          </div>
+
           {/* Main Titles */}
           <div style={{ display: 'grid', gridTemplateColumns: '2fr 2fr 1.5fr 1.5fr 100px auto', padding: '0.5rem 1.5rem 0', color: 'var(--text-muted)', fontSize: '0.8rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
              <span>Paciente</span>
@@ -174,7 +199,7 @@ export default function Home() {
              <span style={{ textAlign: "center", width: "40px" }}>Accion</span>
           </div>
           
-          {patients.map((patient) => (
+          {filteredPatients.map((patient) => (
             <div 
                className="list-row" 
                key={patient.id} 

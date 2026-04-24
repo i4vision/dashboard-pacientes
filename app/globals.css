@@ -215,7 +215,7 @@ h1 {
 
 .list-row {
   display: grid;
-  grid-template-columns: 2fr 2fr 1.5fr 1.5fr 60px auto;
+  grid-template-columns: 2fr 2fr 1.5fr 1.5fr 100px auto;
   align-items: center;
   background: var(--card-bg);
   border: 1px solid var(--border-color);

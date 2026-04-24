@@ -165,7 +165,7 @@ export default function Home() {
       ) : (
         <div className="interactive-list">
           {/* Main Titles */}
-          <div style={{ display: 'grid', gridTemplateColumns: '2fr 2fr 1.5fr 1.5fr 60px auto', padding: '0.5rem 1.5rem 0', color: 'var(--text-muted)', fontSize: '0.8rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '2fr 2fr 1.5fr 1.5fr 100px auto', padding: '0.5rem 1.5rem 0', color: 'var(--text-muted)', fontSize: '0.8rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
              <span>Paciente</span>
              <span>Especialidad</span>
              <span>Fecha</span>

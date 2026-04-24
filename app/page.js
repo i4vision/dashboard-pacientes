@@ -284,7 +284,7 @@ export default function Home() {
                          <span className="data-label">Call Duration</span>
                          <span className="data-value">{selectedPatient.call_duration || "0"}s</span>
                        </div>
-                       <div className="metric" style={{ marginLeft: "auto" }}>
+                       <div className="metric">
                          <span className="data-label">VAPI Routing Tag</span>
                          <span className="data-value" style={{ fontFamily: "monospace", opacity: 0.7 }}>{selectedPatient.vapi_call_id}</span>
                        </div>

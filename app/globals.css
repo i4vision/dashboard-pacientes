@@ -342,10 +342,10 @@ h1 {
   border: 1px solid rgba(99, 102, 241, 0.2);
   border-radius: 12px;
   padding: 1.5rem;
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
   gap: 2rem;
-  align-items: center;
-  flex-wrap: wrap;
+  align-items: start;
 }
 
 .ai-telemetry-block .metric {
@@ -361,7 +361,12 @@ h1 {
   font-weight: 600;
   display: inline-flex;
   align-items: center;
+  width: fit-content;
 }
+
+.sentiment-badge.positive-bg { background: var(--sent-green-bg); color: var(--sent-green); }
+.sentiment-badge.negative-bg { background: var(--sent-red-bg); color: var(--sent-red); }
+.sentiment-badge.neutral-bg { background: var(--sent-gray-bg); color: var(--text-main); }
 
 .transcript-area {
   background: rgba(0,0,0,0.4);
